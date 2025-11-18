@@ -6,6 +6,11 @@
 
 A comprehensive MLOps platform for comparing sequential and parallel DBSCAN implementations on NYC taxi trip data, featuring automated workflows, experiment tracking, monitoring, and observability.
 
+[demo.webm](https://github.com/user-attachments/assets/3af0fe37-604f-469e-8045-e230c6e35e3b)
+
+
+
+
 ## 🚀 Quick Start
 
 ### Prerequisites
