@@ -1,0 +1,391 @@
+{
+  "title": "System Monitoring",
+  "tags": ["system", "infrastructure", "monitoring"],
+  "timezone": "browser",
+  "schemaVersion": 27,
+  "version": 1,
+  "refresh": "30s",
+  "panels": [
+    {
+      "id": 1,
+      "title": "Service Availability",
+      "type": "stat",
+      "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+      "targets": [
+        {
+          "expr": "up",
+          "legendFormat": "{{job}}",
+          "refId": "A",
+          "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {"options": {"0": {"text": "DOWN", "color": "red"}}, "type": "value"},
+            {"options": {"1": {"text": "UP", "color": "green"}}, "type": "value"}
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"value": 0, "color": "red"},
+              {"value": 1, "color": "green"}
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": ["lastNotNull"]
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "Application CPU Usage",
+      "type": "gauge",
+      "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
+      "targets": [
+        {
+          "expr": "application_cpu_usage_percent",
+          "refId": "A",
+          "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"value": 0, "color": "green"},
+              {"value": 50, "color": "yellow"},
+              {"value": 80, "color": "red"}
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "Application Memory Usage",
+      "type": "gauge",
+      "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0},
+      "targets": [
+        {
+          "expr": "application_memory_usage_bytes / 1024 / 1024 / 1024",
+          "refId": "A",
+          "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "decgbytes",
+          "min": 0,
+          "max": 16,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"value": 0, "color": "green"},
+              {"value": 4, "color": "yellow"},
+              {"value": 8, "color": "red"}
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "Database Connections",
+      "type": "stat",
+      "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0},
+      "targets": [
+        {
+          "expr": "database_connections_active",
+          "refId": "A",
+          "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"value": 0, "color": "green"},
+              {"value": 50, "color": "yellow"},
+              {"value": 100, "color": "red"}
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 5,
+      "title": "CPU Usage Over Time",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
+      "targets": [
+        {
+          "expr": "application_cpu_usage_percent",
+          "legendFormat": "CPU Usage %",
+          "refId": "A",
+          "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+        },
+        {
+          "expr": "rate(process_cpu_seconds_total{job=\"taxi-mlops-app\"}[1m]) * 100",
+          "legendFormat": "Process CPU %",
+          "refId": "B",
+          "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "lineWidth": 2
+          },
+          "unit": "percent",
+          "min": 0,
+          "max": 100
+        }
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "title": "Memory Usage Over Time",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
+      "targets": [
+        {
+          "expr": "application_memory_usage_bytes / 1024 / 1024",
+          "legendFormat": "App Memory (MB)",
+          "refId": "A",
+          "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+        },
+        {
+          "expr": "process_resident_memory_bytes{job=\"taxi-mlops-app\"} / 1024 / 1024",
+          "legendFormat": "Process RSS (MB)",
+          "refId": "B",
+          "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+        },
+        {
+          "expr": "process_virtual_memory_bytes{job=\"taxi-mlops-app\"} / 1024 / 1024",
+          "legendFormat": "Process Virtual (MB)",
+          "refId": "C",
+          "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "lineWidth": 2
+          },
+          "unit": "decmbytes"
+        }
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 7,
+      "title": "Process Open File Descriptors",
+      "type": "timeseries",
+      "gridPos": {"h": 6, "w": 8, "x": 0, "y": 12},
+      "targets": [
+        {
+          "expr": "process_open_fds{job=\"taxi-mlops-app\"}",
+          "legendFormat": "Open FDs",
+          "refId": "A",
+          "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+        },
+        {
+          "expr": "process_max_fds{job=\"taxi-mlops-app\"}",
+          "legendFormat": "Max FDs",
+          "refId": "B",
+          "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 0
+          },
+          "unit": "short"
+        }
+      }
+    },
+    {
+      "id": 8,
+      "title": "Python Garbage Collection",
+      "type": "timeseries",
+      "gridPos": {"h": 6, "w": 8, "x": 8, "y": 12},
+      "targets": [
+        {
+          "expr": "rate(python_gc_collections_total{job=\"taxi-mlops-app\"}[1m])",
+          "legendFormat": "Gen {{generation}} collections/sec",
+          "refId": "A",
+          "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 10
+          },
+          "unit": "ops"
+        }
+      }
+    },
+    {
+      "id": 9,
+      "title": "Scrape Duration",
+      "type": "timeseries",
+      "gridPos": {"h": 6, "w": 8, "x": 16, "y": 12},
+      "targets": [
+        {
+          "expr": "scrape_duration_seconds",
+          "legendFormat": "{{job}}",
+          "refId": "A",
+          "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 10
+          },
+          "unit": "s"
+        }
+      }
+    },
+    {
+      "id": 10,
+      "title": "Active Targets by Job",
+      "type": "table",
+      "gridPos": {"h": 6, "w": 12, "x": 0, "y": 18},
+      "targets": [
+        {
+          "expr": "up",
+          "format": "table",
+          "instant": true,
+          "refId": "A",
+          "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {"Time": true, "__name__": true},
+            "indexByName": {},
+            "renameByName": {
+              "Value": "Status",
+              "job": "Job",
+              "instance": "Instance"
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "overrides": [
+          {
+            "matcher": {"id": "byName", "options": "Status"},
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "color-background"
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {"options": {"0": {"text": "DOWN", "color": "red"}}, "type": "value"},
+                  {"options": {"1": {"text": "UP", "color": "green"}}, "type": "value"}
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "title": "Active Alerts",
+      "type": "table",
+      "gridPos": {"h": 6, "w": 12, "x": 12, "y": 18},
+      "targets": [
+        {
+          "expr": "ALERTS{alertstate=\"firing\"}",
+          "format": "table",
+          "instant": true,
+          "refId": "A",
+          "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {"Time": true, "__name__": true, "alertstate": true},
+            "renameByName": {
+              "alertname": "Alert",
+              "severity": "Severity",
+              "component": "Component"
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "overrides": [
+          {
+            "matcher": {"id": "byName", "options": "Severity"},
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "color-background"
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {"options": {"warning": {"color": "yellow"}}, "type": "value"},
+                  {"options": {"critical": {"color": "red"}}, "type": "value"},
+                  {"options": {"info": {"color": "blue"}}, "type": "value"}
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true
+      }
+    }
+  ],
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "uid": "system-monitoring",
+  "editable": true
+}

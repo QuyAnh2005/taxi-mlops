@@ -1,0 +1,56 @@
+# Prometheus configuration for Taxi MLOps monitoring
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'taxi-mlops'
+    environment: 'development'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+# Load rules once and periodically evaluate them
+rule_files:
+  - '/etc/prometheus/alerts/alerts.yml'
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Prefect Server metrics (if metrics endpoint is enabled)
+  # Note: Prefect 3.x may not expose metrics by default
+  # - job_name: 'prefect-server'
+  #   static_configs:
+  #     - targets: ['prefect-server:4200']
+  #   metrics_path: '/api/metrics'
+  #   scrape_interval: 10s
+
+  # Prefect Agent metrics (if metrics endpoint is enabled)
+  # - job_name: 'prefect-agent'
+  #   static_configs:
+  #     - targets: ['prefect-agent:4200']
+  #   metrics_path: '/api/metrics'
+  #   scrape_interval: 10s
+
+  # Application metrics (custom metrics endpoint)
+  - job_name: 'taxi-mlops-app'
+    static_configs:
+      - targets: ['app-metrics:8000']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # Prometheus Pushgateway
+  - job_name: 'pushgateway'
+    honor_labels: true
+    static_configs:
+      - targets: ['pushgateway:9091']
+    scrape_interval: 15s
+

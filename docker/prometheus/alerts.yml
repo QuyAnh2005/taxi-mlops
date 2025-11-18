@@ -1,0 +1,101 @@
+# Alert rules for Taxi MLOps monitoring
+
+groups:
+  - name: prefect_alerts
+    interval: 30s
+    rules:
+      # High Flow Failure Rate (using custom metrics)
+      - alert: HighFlowFailureRate
+        expr: |
+          sum(rate(prefect_flow_runs_total{status="failure"}[5m])) / 
+          sum(rate(prefect_flow_runs_total[5m])) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          component: prefect
+        annotations:
+          summary: "High flow failure rate detected"
+          description: "Flow failure rate is above 10% for the last 5 minutes"
+
+      # Slow Flow Execution
+      - alert: SlowFlowExecution
+        expr: |
+          histogram_quantile(0.95, 
+            rate(prefect_flow_run_duration_seconds_bucket[5m])
+          ) > 300
+        for: 10m
+        labels:
+          severity: warning
+          component: prefect
+        annotations:
+          summary: "Slow flow execution detected"
+          description: "95th percentile flow execution time exceeds 5 minutes"
+
+  - name: application_alerts
+    interval: 30s
+    rules:
+      # High Experiment Failure Rate
+      - alert: HighExperimentFailureRate
+        expr: |
+          rate(experiment_failures_total[5m]) / 
+          rate(experiments_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          component: application
+        annotations:
+          summary: "High experiment failure rate"
+          description: "Experiment failure rate is above 5%"
+
+      # Long Experiment Runtime
+      - alert: LongExperimentRuntime
+        expr: |
+          histogram_quantile(0.95,
+            rate(experiment_duration_seconds_bucket[5m])
+          ) > 600
+        for: 10m
+        labels:
+          severity: info
+          component: application
+        annotations:
+          summary: "Long experiment runtime"
+          description: "95th percentile experiment runtime exceeds 10 minutes"
+
+      # High Memory Usage (from application metrics)
+      - alert: HighMemoryUsage
+        expr: |
+          application_memory_usage_bytes > 8589934592
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High memory usage"
+          description: "Application memory usage is above 8GB"
+
+      # High CPU Usage (from application metrics)
+      - alert: HighCPUUsage
+        expr: |
+          application_cpu_usage_percent > 80
+        for: 10m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High CPU usage"
+          description: "Application CPU usage is above 80% for 10 minutes"
+
+  - name: infrastructure_alerts
+    interval: 30s
+    rules:
+      # Application Metrics Exporter Down
+      - alert: AppMetricsDown
+        expr: up{job="taxi-mlops-app"} == 0
+        for: 2m
+        labels:
+          severity: warning
+          component: monitoring
+        annotations:
+          summary: "Application metrics exporter is down"
+          description: "The application metrics exporter is not responding"
+

@@ -1,0 +1,23 @@
+# Prefect deployment configuration
+
+name: taxi-mlops-deployment
+description: Deployment configuration for taxi MLOps DBSCAN experiments
+
+# Work pool configuration
+work_pool:
+  name: default-agent-pool
+  type: process
+  base_job_configuration:
+    env:
+      PREFECT_API_URL: http://localhost:4200/api
+
+# Flow storage
+flow_storage:
+  type: local
+  path: /workspace
+
+# Flow runs
+flow_runs:
+  - name: experiment_pipeline
+    entrypoint: src/workflows/experiment_pipeline.py:experiment_pipeline
+
