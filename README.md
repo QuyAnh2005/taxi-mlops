@@ -42,7 +42,7 @@ If you prefer to run steps individually:
 
 1. **Clone the repository**:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/QuyAnh2005/taxi-mlops.git
    cd taxi-mlops
    ```
 
