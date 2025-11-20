@@ -356,26 +356,3 @@ Common issues and solutions:
 4. **MLflow connection errors**: Check PostgreSQL and MinIO health
 
 See [docs/guides/TROUBLESHOOTING.md](docs/guides/TROUBLESHOOTING.md) for detailed troubleshooting.
-
-## 📝 License
-
-[Add your license here]
-
-## 🤝 Contributing
-
-[Add contribution guidelines here]
-
-## 📧 Contact
-
-[Add contact information here]
-
-## 🙏 Acknowledgments
-
-- Prefect for workflow orchestration
-- MLflow for experiment tracking
-- Prometheus & Grafana for monitoring
-- scikit-learn for DBSCAN implementations
-
----
-
-**For detailed documentation, see the [docs/](docs/) directory.**
